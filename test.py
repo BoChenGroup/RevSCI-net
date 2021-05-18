@@ -6,8 +6,7 @@ import datetime
 import os
 import numpy as np
 import argparse
-from skimage.metrics import peak_signal_noise_ratio as compare_psnr
-from skimage.metrics import structural_similarity as compare_ssim
+from utils import compare_ssim, compare_psnr
 
 if not torch.cuda.is_available():
     raise Exception('NO GPU!')
@@ -82,8 +81,8 @@ def test(test_path, epoch, result_path, model, args):
                 for jj in range(args.B):
                     out_pic_CNN = out_pic1[0, jj, :, :]
                     gt_t = pic_gt[ii, jj, :, :]
-                    psnr_1 += compare_psnr(gt_t.cpu().numpy(), out_pic_CNN.cpu().numpy())
-                    ssim_1 += compare_ssim(gt_t.cpu().numpy(), out_pic_CNN.cpu().numpy())
+                    psnr_1 += compare_psnr(gt_t.cpu().numpy() * 255, out_pic_CNN.cpu().numpy() * 255)
+                    ssim_1 += compare_ssim(gt_t.cpu().numpy() * 255, out_pic_CNN.cpu().numpy() * 255)
 
             psnr_cnn[i] = psnr_1 / (meas.shape[0] * args.B)
             ssim_cnn[i] = ssim_1 / (meas.shape[0] * args.B)
